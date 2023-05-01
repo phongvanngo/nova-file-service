@@ -1,15 +1,18 @@
 import express, { Request, Response } from 'express';
-import multer from 'multer';
-import handleUpload from './upload';
-const upload = multer({ dest: 'uploads/' })
+import uploadRouter from './router/upload';
+import { DOMAIN, PORT } from "./config/configuration";
+import cors from "cors";
+
 const app = express();
-app.post('/profile', upload.single('avatar'), function (req: Request, res: Response, next) {
-    console.log("Req file", req.file)
-    handleUpload(req, res);
-    // req.file is the `avatar` file
-    // req.body will hold the text fields, if there were any
-    res.json("Con cac")
-})
-app.listen(3000, () => {
-    console.log('Server started on port 3000');
+
+app.use(express.json());
+app.use(express.urlencoded());
+app.use(cors())
+
+app.use(express.static('uploads'));
+
+app.use("/api/upload", uploadRouter);
+
+app.listen(PORT, () => {
+    console.log('Server started on port ' + PORT);
 });
